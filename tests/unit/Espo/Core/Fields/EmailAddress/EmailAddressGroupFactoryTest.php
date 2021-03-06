@@ -141,7 +141,7 @@ class EmailAddressGroupFactoryTest extends \PHPUnit\Framework\TestCase
         $this->factory->createFromEntity($entity, 'test');
     }
 
-    public function testCreate1() : void
+    public function testCreateFromEmailAddressRepository() : void
     {
         $this->initField('Test', 'test', 'email');
 
@@ -172,6 +172,71 @@ class EmailAddressGroupFactoryTest extends \PHPUnit\Framework\TestCase
         ];
 
         $this->initEmailAddressRepository($entity, $dataList);
+
+        $entity
+            ->expects($this->once())
+            ->method('has')
+            ->with('testData')
+            ->willReturn(false);
+
+        $group = $this->factory->createFromEntity($entity, 'test');
+
+        $this->assertEquals(3, $group->getCount());
+
+        $one = $group->getList()[0];
+        $two = $group->getList()[1];
+        $three = $group->getList()[2];
+
+        $this->assertEquals('ONE@test.com', $one->getAddress());
+
+        $this->assertTrue($two->isInvalid());
+
+        $this->assertTrue($three->isOptedOut());
+
+        $this->assertEquals('ONE@test.com', $group->getPrimary()->getAddress());
+    }
+
+    public function testCreateFromDataAttribute() : void
+    {
+        $this->initField('Test', 'test', 'email');
+
+        $entity = $this->createEntityMock('Test');
+
+        $dataList = [
+            (object) [
+                'emailAddress' => 'ONE@test.com',
+                'lower' => 'one@test.com',
+                'primary' => true,
+                'optOut' => false,
+                'invalid' => false,
+            ],
+            (object) [
+                'emailAddress' => 'TWO@test.com',
+                'lower' => 'two@test.com',
+                'primary' => false,
+                'optOut' => false,
+                'invalid' => true,
+            ],
+            (object) [
+                'emailAddress' => 'THREE@test.com',
+                'lower' => 'three@test.com',
+                'primary' => false,
+                'optOut' => true,
+                'invalid' => false,
+            ],
+        ];
+
+        $entity
+            ->expects($this->once())
+            ->method('has')
+            ->with('testData')
+            ->willReturn(true);
+
+        $entity
+            ->expects($this->once())
+            ->method('get')
+            ->with('testData')
+            ->willReturn($dataList);
 
         $group = $this->factory->createFromEntity($entity, 'test');
 

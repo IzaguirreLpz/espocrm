@@ -79,9 +79,21 @@ class EmailAddressGroupFactory
 
         $primaryEmailAddress = null;
 
-        $dataList = $this->entityManager
-            ->getRepository('EmailAddress')
-            ->getEmailAddressData($entity);
+        $dataList = null;
+
+        $dataAttribute = $field . 'Data';
+
+        if ($entity->has($dataAttribute)) {
+            $dataList = $this->sanitizeDataList(
+                $entity->get($dataAttribute)
+            );
+        }
+
+        if (!$dataList) {
+            $dataList = $this->entityManager
+                ->getRepository('EmailAddress')
+                ->getEmailAddressData($entity);
+        }
 
         foreach ($dataList as $item) {
             $emailAddress = EmailAddress::fromAddress($item->emailAddress);
@@ -108,5 +120,26 @@ class EmailAddressGroupFactory
         }
 
         return $group;
+    }
+
+    private function sanitizeDataList(array $dataList) : array
+    {
+        $sanitizedDataList = [];
+
+        foreach ($dataList as $item) {
+            if (is_array($item)) {
+                $sanitizedDataList[] = (object) $item;
+
+                continue;
+            }
+
+            if (!is_object($item)) {
+                throw new RuntimeException("Bad data.");
+            }
+
+            $sanitizedDataList[] = $item;
+        }
+
+        return $sanitizedDataList;
     }
 }

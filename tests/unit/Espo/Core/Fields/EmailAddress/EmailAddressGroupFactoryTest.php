@@ -185,6 +185,8 @@ class EmailAddressGroupFactoryTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($two->isInvalid());
 
+        $this->assertTrue($three->isOptedOut());
+
         $this->assertEquals('ONE@test.com', $group->getPrimary()->getAddress());
     }
 }

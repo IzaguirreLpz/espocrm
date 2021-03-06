@@ -141,7 +141,6 @@ class EmailAddressGroupFactoryTest extends \PHPUnit\Framework\TestCase
         $this->factory->createFromEntity($entity, 'test');
     }
 
-
     public function testCreate1() : void
     {
         $this->initField('Test', 'test', 'email');

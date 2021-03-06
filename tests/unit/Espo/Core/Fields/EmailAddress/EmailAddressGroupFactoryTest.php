@@ -189,4 +189,19 @@ class EmailAddressGroupFactoryTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('ONE@test.com', $group->getPrimary()->getAddress());
     }
+
+    public function testCreateEmpty() : void
+    {
+        $this->initField('Test', 'test', 'email');
+
+        $entity = $this->createEntityMock('Test');
+
+        $dataList = [];
+
+        $this->initEmailAddressRepository($entity, $dataList);
+
+        $group = $this->factory->createFromEntity($entity, 'test');
+
+        $this->assertTrue($group->isEmpty());
+    }
 }

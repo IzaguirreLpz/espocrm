@@ -94,6 +94,14 @@ class EmailAddressGroup
     }
 
     /**
+     * Get a number of addresses.
+     */
+    public function getCount() : int
+    {
+        return count($this->list);
+    }
+
+    /**
      * Get a list of email addresses w/o a primary.
      *
      * @return array<EmailAddress>
